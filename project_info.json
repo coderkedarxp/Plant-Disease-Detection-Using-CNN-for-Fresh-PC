@@ -1,0 +1,64 @@
+{
+  "project_name": "Plant Disease Prediction",
+  "description": "Deep learning-based plant disease detection and diagnosis system",
+  "version": "1.0.0",
+  "author": "Your Name",
+  "created_date": "2025-12-17",
+  
+  "model_info": {
+    "supported_architectures": [
+      "MobileNetV2",
+      "ResNet50",
+      "EfficientNetB0",
+      "VGG16",
+      "Custom CNN"
+    ],
+    "default_architecture": "MobileNetV2",
+    "input_size": [224, 224, 3],
+    "framework": "TensorFlow/Keras"
+  },
+  
+  "dataset_info": {
+    "recommended_datasets": [
+      {
+        "name": "PlantVillage",
+        "url": "https://www.kaggle.com/datasets/abdallahalidev/plantvillage-dataset",
+        "classes": 38,
+        "images": "54000+"
+      },
+      {
+        "name": "Plant Pathology 2021",
+        "url": "https://www.kaggle.com/competitions/plant-pathology-2021-fgvc8",
+        "classes": "Multiple",
+        "images": "20000+"
+      }
+    ]
+  },
+  
+  "file_structure": {
+    "data/raw/": "Original dataset organized by class",
+    "data/processed/": "Processed/augmented data",
+    "models/saved_models/": "Trained model checkpoints",
+    "src/": "Source code modules",
+    "notebooks/": "Jupyter notebooks for experimentation",
+    "config.py": "Configuration parameters",
+    "train.py": "Model training script",
+    "predict.py": "Prediction/inference script",
+    "app.py": "Streamlit web application"
+  },
+  
+  "usage": {
+    "install": "pip install -r requirements.txt",
+    "train": "python train.py --data_dir data/raw --epochs 50",
+    "predict": "python predict.py --model_path models/saved_models/model_name/best_model.keras --image_path image.jpg",
+    "web_app": "streamlit run app.py"
+  },
+  
+  "dependencies": {
+    "tensorflow": ">=2.13.0",
+    "opencv-python": ">=4.8.0",
+    "streamlit": ">=1.25.0",
+    "numpy": ">=1.24.0",
+    "matplotlib": ">=3.7.0"
+  }
+}

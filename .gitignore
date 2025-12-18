@@ -1,0 +1,97 @@
+########################################
+# Python
+########################################
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Virtual environments
+env/
+venv/
+.venv/
+ENV/
+
+# Packaging / build artifacts
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+########################################
+# Jupyter Notebooks
+########################################
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+########################################
+# Data and Models (large, local-only)
+########################################
+# Raw/processed datasets
+data/raw/
+data/processed/
+
+# Trained models and checkpoints
+models/saved_models/
+models/checkpoints/
+*.h5
+*.keras
+*.ckpt
+*.pb
+*.pth
+*.pkl
+*.onnx
+
+# Training logs and TensorBoard
+logs/
+**/logs/**
+events.out.tfevents*
+*.log
+**/training_log.csv
+
+# Keep essential metadata and (optionally) one selected model
+# Allow only the specific model folder's small metadata
+!models/saved_models/plant_disease_model/
+models/saved_models/plant_disease_model/**
+!models/saved_models/plant_disease_model/class_indices.json
+!models/saved_models/plant_disease_model/training_config.json
+# If using Git LFS, also include the model binary below
+!models/saved_models/plant_disease_model/best_model.keras
+
+########################################
+# Environment & Secrets
+########################################
+.env
+.env.*
+.python-version
+.streamlit/secrets.toml
+
+########################################
+# Editors & OS cruft
+########################################
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini

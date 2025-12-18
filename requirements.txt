@@ -1,0 +1,28 @@
+# Deep Learning Framework
+tensorflow>=2.13.0
+keras>=2.13.0
+
+# Image Processing
+opencv-python>=4.8.0
+Pillow>=10.0.0
+
+# Data Science
+numpy>=1.24.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+scikit-learn>=1.3.0
+
+# Data Augmentation
+albumentations>=1.3.0
+
+# Web Framework for UI
+streamlit>=1.25.0
+flask>=2.3.0
+
+# Utilities
+tqdm>=4.65.0
+python-dotenv>=1.0.0
+
+# Visualization
+plotly>=5.15.0
