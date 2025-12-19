@@ -67,14 +67,15 @@ events.out.tfevents*
 *.log
 **/training_log.csv
 
-# Keep essential metadata and (optionally) one selected model
-# Allow only the specific model folder's small metadata
-!models/saved_models/plant_disease_model/
-models/saved_models/plant_disease_model/**
-!models/saved_models/plant_disease_model/class_indices.json
-!models/saved_models/plant_disease_model/training_config.json
-# If using Git LFS, also include the model binary below
-!models/saved_models/plant_disease_model/best_model.keras
+# Keep essential metadata and selected model
+# Only the latest trained model will be included in the repo
+
+# Latest model (30-epoch trained)
+!models/saved_models/plant_disease_model2/
+models/saved_models/plant_disease_model2/**
+!models/saved_models/plant_disease_model2/class_indices.json
+!models/saved_models/plant_disease_model2/training_config.json
+!models/saved_models/plant_disease_model2/best_model.keras
 
 ########################################
 # Environment & Secrets
