@@ -203,9 +203,14 @@ def main():
         
         if os.path.exists(models_dir):
             for model_dir in os.listdir(models_dir):
-                model_path = os.path.join(models_dir, model_dir, 'best_model.keras')
-                if os.path.exists(model_path):
-                    available_models.append((model_dir, model_path))
+                model_dir_path = os.path.join(models_dir, model_dir)
+                
+                # Check for SavedModel format (saved_model.pb)
+                if os.path.isdir(model_dir_path) and os.path.exists(os.path.join(model_dir_path, 'saved_model.pb')):
+                    available_models.append((model_dir, model_dir_path))
+                # Also check for legacy .keras format
+                elif os.path.isfile(os.path.join(model_dir_path, 'best_model.keras')):
+                    available_models.append((model_dir, os.path.join(model_dir_path, 'best_model.keras')))
         
         if available_models:
             model_names = [name for name, _ in available_models]
@@ -215,29 +220,23 @@ def main():
                 index=0
             )
             model_path = [path for name, path in available_models if name == selected_model_name][0]
-            class_indices_path = os.path.join(os.path.dirname(model_path), 'class_indices.json')
+            
+            # Determine if it's a SavedModel or .keras file
+            if os.path.isdir(model_path):
+                # SavedModel format - class indices in the same directory
+                class_indices_path = os.path.join(model_path, 'class_indices.json')
+            else:
+                # .keras format - class indices in the parent directory
+                class_indices_path = os.path.join(os.path.dirname(model_path), 'class_indices.json')
         else:
             st.warning("No trained models found!")
             st.info("""
-            **On Streamlit Cloud:**
-            Git LFS files might not have been pulled. The model files should be in:
-            `models/saved_models/plant_disease_model2/`
+            **Expected model location:** `models/saved_models/plant_disease_model2/`
             
-            **To fix locally:**
-            1. Run: `git lfs install && git lfs pull`
-            2. Restart the app
-            
-            **For Streamlit Cloud:**
-            Check 'Manage app' logs to see if Git LFS pull failed.
+            The model should be in SavedModel format with files like:
+            - saved_model.pb
+            - class_indices.json
             """)
-            
-            # Try to check if LFS pointer files exist
-            expected_model = os.path.join(models_dir, "plant_disease_model2", "best_model.keras")
-            if os.path.exists(expected_model):
-                file_size = os.path.getsize(expected_model)
-                if file_size < 1000:  # LFS pointer files are tiny
-                    st.error(f"⚠️ Model file is only {file_size} bytes - this is likely a Git LFS pointer file that wasn't downloaded!")
-                    st.code("git lfs pull", language="bash")
             
             model_path = None
             class_indices_path = None
