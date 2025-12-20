@@ -160,9 +160,29 @@ def main():
             class_indices_path = os.path.join(os.path.dirname(model_path), 'class_indices.json')
         else:
             st.warning("No trained models found!")
-            st.info("Please train a model first using train.py")
-            model_path = st.text_input("Or enter model path manually:")
-            class_indices_path = st.text_input("Class indices path (optional):")
+            st.info("""
+            **On Streamlit Cloud:**
+            Git LFS files might not have been pulled. The model files should be in:
+            `models/saved_models/plant_disease_model2/`
+            
+            **To fix locally:**
+            1. Run: `git lfs install && git lfs pull`
+            2. Restart the app
+            
+            **For Streamlit Cloud:**
+            Check 'Manage app' logs to see if Git LFS pull failed.
+            """)
+            
+            # Try to check if LFS pointer files exist
+            expected_model = os.path.join(models_dir, "plant_disease_model2", "best_model.keras")
+            if os.path.exists(expected_model):
+                file_size = os.path.getsize(expected_model)
+                if file_size < 1000:  # LFS pointer files are tiny
+                    st.error(f"⚠️ Model file is only {file_size} bytes - this is likely a Git LFS pointer file that wasn't downloaded!")
+                    st.code("git lfs pull", language="bash")
+            
+            model_path = None
+            class_indices_path = None
         
         # Prediction settings
         st.subheader("Prediction Settings")
