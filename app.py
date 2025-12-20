@@ -73,18 +73,21 @@ st.markdown("""
 
 @st.cache_resource
 def load_predictor(model_path, class_indices_path=None):
-    """Load predictor model (cached) with TensorFlow version compatibility"""
+    """Load predictor model (cached) with robust TensorFlow compatibility"""
     try:
         import tensorflow as tf
-        # Load model without compiling to avoid version compatibility issues
-        model = tf.keras.models.load_model(model_path, compile=False)
         
-        # Recompile with current TensorFlow version
-        model.compile(
-            optimizer='adam',
-            loss='categorical_crossentropy',
-            metrics=['accuracy']
-        )
+        # Try multiple loading strategies for compatibility
+        try:
+            # Strategy 1: Load without compiling (least strict)
+            model = tf.keras.models.load_model(model_path, compile=False, safe_mode=False)
+        except:
+            try:
+                # Strategy 2: Use legacy format
+                model = tf.keras.models.load_model(model_path, compile=False)
+            except:
+                # Strategy 3: Load as SavedModel if available
+                model = tf.saved_model.load(model_path)
         
         # Create a simple wrapper that mimics PlantDiseasePredictor
         class SimplePredictor:
@@ -98,23 +101,42 @@ def load_predictor(model_path, class_indices_path=None):
                     self.class_names = {}
             
             def predict_from_array(self, image_array, top_k=5):
+                import tensorflow as tf
+                
                 # Preprocess image
                 if len(image_array.shape) == 2:
                     image_array = np.stack([image_array] * 3, axis=-1)
                 
+                # Ensure uint8 or float32
+                if image_array.dtype != np.float32:
+                    if image_array.max() > 1.0:
+                        image_array = image_array.astype(np.float32) / 255.0
+                    else:
+                        image_array = image_array.astype(np.float32)
+                
                 # Resize to model input size
                 image = tf.image.resize(image_array, (224, 224))
-                image = image / 255.0
+                
+                # Ensure values are in [0, 1] range
+                if image.numpy().max() > 1.0:
+                    image = image / 255.0
+                
                 image = tf.expand_dims(image, 0)
                 
                 # Predict
-                predictions = self.model.predict(image, verbose=0)
+                try:
+                    predictions = self.model.predict(image, verbose=0)
+                except:
+                    # If predict fails, try direct call
+                    predictions = self.model(image, training=False)
+                
+                predictions = predictions.numpy() if hasattr(predictions, 'numpy') else predictions
                 top_indices = np.argsort(predictions[0])[::-1][:top_k]
                 
                 results = {
                     'predictions': [
                         {
-                            'class': self.class_names.get(idx, f'Class_{idx}'),
+                            'class': self.class_names.get(int(idx), f'Class_{idx}'),
                             'confidence': float(predictions[0][idx]),
                             'confidence_percent': f'{predictions[0][idx]*100:.2f}%'
                         }
@@ -126,7 +148,8 @@ def load_predictor(model_path, class_indices_path=None):
         predictor = SimplePredictor(model, class_indices_path)
         return predictor, None
     except Exception as e:
-        return None, str(e)
+        import traceback
+        return None, f"Model loading error: {str(e)}\n{traceback.format_exc()}"
 
 
 def get_confidence_color(confidence):
