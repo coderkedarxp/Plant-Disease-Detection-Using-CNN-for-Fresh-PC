@@ -53,6 +53,10 @@ data/processed/
 models/saved_models/
 models/checkpoints/
 
+# Allow specific model folder by unignoring parent directories first
+!models/
+!models/saved_models/
+
 # Keep essential metadata and selected model FIRST (before wildcards)
 # Only the latest trained model will be included in the repo
 
@@ -61,6 +65,9 @@ models/checkpoints/
 !models/saved_models/plant_disease_model2/class_indices.json
 !models/saved_models/plant_disease_model2/training_config.json
 !models/saved_models/plant_disease_model2/best_model.keras
+!models/saved_models/plant_disease_model2/saved_model.pb
+!models/saved_models/plant_disease_model2/assets/
+!models/saved_models/plant_disease_model2/variables/
 
 # Now ignore everything else in that folder
 models/saved_models/plant_disease_model2/logs/
@@ -81,9 +88,6 @@ logs/
 events.out.tfevents*
 *.log
 **/training_log.csv
-!models/saved_models/plant_disease_model2/class_indices.json
-!models/saved_models/plant_disease_model2/training_config.json
-!models/saved_models/plant_disease_model2/best_model.keras
 
 ########################################
 # Environment & Secrets
