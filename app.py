@@ -73,9 +73,57 @@ st.markdown("""
 
 @st.cache_resource
 def load_predictor(model_path, class_indices_path=None):
-    """Load predictor model (cached)"""
+    """Load predictor model (cached) with TensorFlow version compatibility"""
     try:
-        predictor = PlantDiseasePredictor(model_path, class_indices_path)
+        import tensorflow as tf
+        # Load model without compiling to avoid version compatibility issues
+        model = tf.keras.models.load_model(model_path, compile=False)
+        
+        # Recompile with current TensorFlow version
+        model.compile(
+            optimizer='adam',
+            loss='categorical_crossentropy',
+            metrics=['accuracy']
+        )
+        
+        # Create a simple wrapper that mimics PlantDiseasePredictor
+        class SimplePredictor:
+            def __init__(self, model, class_indices_path):
+                self.model = model
+                if class_indices_path and os.path.exists(class_indices_path):
+                    with open(class_indices_path, 'r') as f:
+                        self.class_indices = json.load(f)
+                    self.class_names = {v: k for k, v in self.class_indices.items()}
+                else:
+                    self.class_names = {}
+            
+            def predict_from_array(self, image_array, top_k=5):
+                # Preprocess image
+                if len(image_array.shape) == 2:
+                    image_array = np.stack([image_array] * 3, axis=-1)
+                
+                # Resize to model input size
+                image = tf.image.resize(image_array, (224, 224))
+                image = image / 255.0
+                image = tf.expand_dims(image, 0)
+                
+                # Predict
+                predictions = self.model.predict(image, verbose=0)
+                top_indices = np.argsort(predictions[0])[::-1][:top_k]
+                
+                results = {
+                    'predictions': [
+                        {
+                            'class': self.class_names.get(idx, f'Class_{idx}'),
+                            'confidence': float(predictions[0][idx]),
+                            'confidence_percent': f'{predictions[0][idx]*100:.2f}%'
+                        }
+                        for idx in top_indices
+                    ]
+                }
+                return results
+        
+        predictor = SimplePredictor(model, class_indices_path)
         return predictor, None
     except Exception as e:
         return None, str(e)
