@@ -1,0 +1,12 @@
+{
+    "model_type": "MobileNetV2",
+    "num_classes": 38,
+    "image_size": [
+        224,
+        224
+    ],
+    "batch_size": 32,
+    "epochs": 30,
+    "learning_rate": 0.001,
+    "timestamp": "20251218_173123"
+}

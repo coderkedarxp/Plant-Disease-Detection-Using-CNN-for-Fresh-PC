@@ -49,11 +49,26 @@ wheels/
 data/raw/
 data/processed/
 
-# Trained models and checkpoints
+# Trained models and checkpoints (ignore by default)
 models/saved_models/
 models/checkpoints/
+
+# Keep essential metadata and selected model FIRST (before wildcards)
+# Only the latest trained model will be included in the repo
+
+# Latest model (30-epoch trained) - unignore specific folder and files
+!models/saved_models/plant_disease_model2/
+!models/saved_models/plant_disease_model2/class_indices.json
+!models/saved_models/plant_disease_model2/training_config.json
+!models/saved_models/plant_disease_model2/best_model.keras
+
+# Now ignore everything else in that folder
+models/saved_models/plant_disease_model2/logs/
+models/saved_models/plant_disease_model2/training_log.csv
+models/saved_models/plant_disease_model2/final_model.keras
+
+# Other model formats (after unignore rules)
 *.h5
-*.keras
 *.ckpt
 *.pb
 *.pth
@@ -66,13 +81,6 @@ logs/
 events.out.tfevents*
 *.log
 **/training_log.csv
-
-# Keep essential metadata and selected model
-# Only the latest trained model will be included in the repo
-
-# Latest model (30-epoch trained)
-!models/saved_models/plant_disease_model2/
-models/saved_models/plant_disease_model2/**
 !models/saved_models/plant_disease_model2/class_indices.json
 !models/saved_models/plant_disease_model2/training_config.json
 !models/saved_models/plant_disease_model2/best_model.keras
